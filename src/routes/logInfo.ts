@@ -1,7 +1,7 @@
-import express from 'express';
-import controller from '../controller/logInfo';
+import express from "express";
+import getLogFileInfo from "../controller";
 const router = express.Router();
 
-router.get('/fileInfo', controller.getLogFileInfo)
+router.get("/fileInfo", getLogFileInfo);
 
-export default router
+export default router;

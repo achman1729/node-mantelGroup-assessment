@@ -1,5 +1,7 @@
 import { logFilePath } from "../log/logfile";
 
-export const config = () => {
+const config = () => {
   return { logFilePath: logFilePath };
 };
+
+export default config;

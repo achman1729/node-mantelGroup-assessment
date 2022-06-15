@@ -33,4 +33,5 @@ const readFile = async (path: string): Promise<string> => {
 const fileReaderUtils = {
   readFile,
 };
-export default fileReaderUtils;
+
+export { fileReaderUtils };

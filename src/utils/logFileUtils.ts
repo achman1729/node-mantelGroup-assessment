@@ -1,4 +1,4 @@
-import { config } from "../config/config";
+import config from "../config";
 import _ from "lodash";
 import moment from "moment";
 
@@ -199,4 +199,4 @@ const logFileUtils = {
   getLogFilePath,
   formatLogFileRawData,
 };
-export default logFileUtils;
+export { logFileUtils };

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import fileReaderUtils from "../utils/fileReaderUtils";
-import logFileUtils, { formatLogFileModel } from "../utils/logFileUtils";
+import { fileReaderUtils, logFileUtils, formatLogFileModel } from "../utils";
 
 const getLogFileInfo = async (_req: Request, res: Response) => {
   try {
@@ -44,4 +43,4 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
   }
 };
 
-export default { getLogFileInfo };
+export default getLogFileInfo;
