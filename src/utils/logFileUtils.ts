@@ -45,8 +45,6 @@ const getThreeMostVisitedUrls = (
     allUrls.push(fd.url);
   });
 
-  // const a = [{a,b,c}: 1, {a}: 3, , ]
-
   const urlsByCount = _.countBy(allUrls);
 
   console.log("urlsByCount", urlsByCount);
@@ -60,10 +58,18 @@ const getThreeMostVisitedUrls = (
   console.log("keyArrayInDescendingOrder", keyArrayInDescendingOrder);
 
   switch (true) {
-    case keyArrayInDescendingOrder.length >= 3:
+    case keyArrayInDescendingOrder.length > 3:
       {
         keyArrayInDescendingOrder.forEach((key) => {
-          topThreeMostVisitedUrls.push(invertedUrlsByCount[key][0]);
+          topThreeMostVisitedUrls.slice(0, 3).push(invertedUrlsByCount[key][0]);
+        });
+      }
+      break;
+
+    case keyArrayInDescendingOrder.length === 3:
+      {
+        keyArrayInDescendingOrder.forEach((key) => {
+          topThreeMostVisitedUrls.slice(0, 3).push(invertedUrlsByCount[key][0]);
         });
       }
       break;
