@@ -120,18 +120,17 @@ const getThreeMostVisitedUrls = (
 const getThreeMostActiveIpAddresses = (
   fileData: formatLogFileModel[]
 ): Promise<string[]> => {
-  const topThreeActiveIpAddresses: string[] = [];
-
   const sortedFileDataByTimeStamp = _.orderBy(
     fileData,
     ["dateTimeStamp"],
     ["desc"]
   );
 
-  console.log("sortedFileDataByTimeStamp", sortedFileDataByTimeStamp);
-  sortedFileDataByTimeStamp.slice(0, 3).forEach((fd) => {
-    topThreeActiveIpAddresses.push(fd.ip);
-  });
+  const uniqueIpAddresses = [
+    ...new Set(sortedFileDataByTimeStamp.map((item) => `${item.ip}`)),
+  ];
+
+  const topThreeActiveIpAddresses: string[] = uniqueIpAddresses.slice(0, 3);
 
   return new Promise((resolve, reject) => {
     if (topThreeActiveIpAddresses.length > 0) {
@@ -145,7 +144,6 @@ const getThreeMostActiveIpAddresses = (
 const formatDateString = (date: string) => {
   const splitDate = date.split(":");
   const formattedDateSting = `${splitDate[0]} ${splitDate[1]}:${splitDate[2]}:${splitDate[3]}`;
-  // return formattedDateSting;
   return moment(new Date(formattedDateSting)).utc().valueOf() ?? Date.now();
 };
 
@@ -182,12 +180,6 @@ const formatLogFileRawData = (fileStringData: string): formatLogFileModel[] => {
         url: allURLMatchesInLogFile[i] ?? "",
       });
     }
-    // console.log(
-    //   "allIpAddressMatchesInLogFile",
-    //   allIpAddressMatchesInLogFile.length
-    // );
-    // console.log("allDateMatchesInLogFile", allDateMatchesInLogFile.length);
-    // console.log("allURLMatchesInLogFile", allURLMatchesInLogFile.length);
   }
   return processedLogData;
 };

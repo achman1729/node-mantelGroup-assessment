@@ -1,6 +1,22 @@
 import { Request, Response } from "express";
 import { fileReaderUtils, logFileUtils, formatLogFileModel } from "../utils";
 
+interface ResultData {
+  numberOfUniqueIpAddresses: number;
+  threeMostVisitedUrls: string[];
+  threeMostActiveIpAddresses: string[];
+  errorMessage?: never;
+}
+
+interface ErrorMessage {
+  errorMessage: string;
+  numberOfUniqueIpAddresses?: never;
+  threeMostVisitedUrls?: never;
+  threeMostActiveIpAddresses?: never;
+}
+
+type Result = ResultData | ErrorMessage;
+
 const getLogFileInfo = async (_req: Request, res: Response) => {
   try {
     const fileStringData = await fileReaderUtils
@@ -8,14 +24,14 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
       .then((result) => {
         return result;
       })
-      .catch((errorMessage) => {
+      .catch((errorMessage: string) => {
         throw errorMessage;
       });
 
     const formattedLogFileData: formatLogFileModel[] =
       logFileUtils.formatLogFileRawData(fileStringData);
 
-    const result: any = await Promise.all([
+    const result: Result = await Promise.all([
       logFileUtils.getNumberOfUniqueIpAddress(formattedLogFileData),
       logFileUtils.getThreeMostVisitedUrls(formattedLogFileData),
       logFileUtils.getThreeMostActiveIpAddresses(formattedLogFileData),
@@ -27,7 +43,7 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
           threeMostActiveIpAddresses: threeMostActive,
         };
       })
-      .catch((errorMessage) => {
+      .catch((errorMessage: string) => {
         return {
           errorMessage,
         };
@@ -37,9 +53,9 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
       throw result.errorMessage;
     }
 
-    return res.status(200).json(result);
+    return res.status(200).send(result);
   } catch (error: any) {
-    return res.status(404).send({ errorMessage: { Error: `${error}` } });
+    return res.status(404).send({ errorMessage: { Error: error } });
   }
 };
 
