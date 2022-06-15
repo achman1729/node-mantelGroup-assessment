@@ -1,6 +1,5 @@
-import path from "path";
+import { logFilePath } from "../log/logfile";
 
 export const config = () => {
-  const logFilePath = path.join(__dirname, "programming-task-example-data.log");
   return { logFilePath: logFilePath };
 };

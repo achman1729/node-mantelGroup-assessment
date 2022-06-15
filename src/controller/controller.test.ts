@@ -10,9 +10,9 @@ describe("logInfo controller", () => {
     beforeEach(() => {
       logfileUtilsFileSpyObject = {
         uniqueIpAddresses: jest.spyOn(logFileUtils, "getUniqueIpAddress"),
-        threeMostVisitedIpAddress: jest.spyOn(
+        threeMostVisitedUrls: jest.spyOn(
           logFileUtils,
-          "getThreeMostVisitedIpAddress"
+          "getThreeMostVisitedUrls"
         ),
         threeMostActiveIpAddresses: jest.spyOn(
           logFileUtils,

@@ -1,14 +1,10 @@
 import { config } from "../config/config";
-
-const regExIpAddressMatcher = "/\bd{1,3}.d{1,3}.d{1,3}.d{1,3}\b/gm";
-
-const getDateRegex = "/\bd{2}/[a-zA-Z]{3}/d{4}:d{2}:d{2}:d{2} +d{4}\b/gm";
-
-const getURLRegEx = '("GET|PUT|POST|DELETE) (.*) (HTTP/1.1")';
+import _ from "lodash";
+import moment from "moment";
 
 export interface formatLogFileModel {
   ip: string;
-  date: string;
+  dateTimeStamp: number;
   url: string;
 }
 
@@ -17,29 +13,104 @@ const getLogFilePath = () => {
   return pathString;
 };
 
-const getUniqueIpAddress = async (
+const getNumberOfUniqueIpAddress = (
   fileData: formatLogFileModel[]
-): Promise<string[]> => {
-  console.log("fileData", fileData);
+): Promise<number> => {
+  const allIpAddresses: string[] = [];
 
-  const result: string[] = [];
+  fileData.forEach((fd) => {
+    allIpAddresses.push(fd.ip);
+  });
+
+  const ipAddressSet = new Set(allIpAddresses);
+
+  const uniqueIpAddresses = [...ipAddressSet];
 
   return new Promise((resolve, reject) => {
-    if (result.length > 0) {
-      resolve(result);
+    if (uniqueIpAddresses.length > 0) {
+      resolve(uniqueIpAddresses.length);
     } else {
       reject(["Error getting unique Ip addresses"]);
     }
   });
 };
 
-const getThreeMostVisitedIpAddress = (
+const getThreeMostVisitedUrls = (
   fileData: formatLogFileModel[]
 ): Promise<string[]> => {
-  const result: string[] = [];
+  const allUrls: string[] = [];
+  const topThreeMostVisitedUrls: string[] = [];
+
+  fileData.forEach((fd) => {
+    allUrls.push(fd.url);
+  });
+
+  const urlsByCount = _.countBy(allUrls);
+
+  const invertedUrlsByCount = _.invertBy(urlsByCount);
+
+  const keyArrayInDescendingOrder = _.reverse(Object.keys(invertedUrlsByCount));
+
+  switch (true) {
+    case keyArrayInDescendingOrder.length >= 3:
+      {
+        keyArrayInDescendingOrder.forEach((key) => {
+          topThreeMostVisitedUrls.push(invertedUrlsByCount[key][0]);
+        });
+      }
+      break;
+
+    case keyArrayInDescendingOrder.length === 2:
+      {
+        if (invertedUrlsByCount[2].length >= 2) {
+          topThreeMostVisitedUrls.push(
+            invertedUrlsByCount[2][0],
+            invertedUrlsByCount[2][1],
+            invertedUrlsByCount[2][2]
+          );
+        } else if (
+          invertedUrlsByCount[2].length === 1 &&
+          invertedUrlsByCount[1].length >= 2
+        ) {
+          topThreeMostVisitedUrls.push(
+            invertedUrlsByCount[2][0],
+            invertedUrlsByCount[1][0],
+            invertedUrlsByCount[1][1]
+          );
+        } else {
+          topThreeMostVisitedUrls.push(
+            invertedUrlsByCount[2][0],
+            invertedUrlsByCount[1][0],
+            ""
+          );
+        }
+      }
+      break;
+
+    case keyArrayInDescendingOrder.length === 1:
+      {
+        if (invertedUrlsByCount[1].length >= 3) {
+          topThreeMostVisitedUrls.push(
+            invertedUrlsByCount[1][0],
+            invertedUrlsByCount[1][1],
+            invertedUrlsByCount[1][2]
+          );
+        } else if (invertedUrlsByCount[1].length >= 2) {
+          topThreeMostVisitedUrls.push(
+            invertedUrlsByCount[1][0],
+            invertedUrlsByCount[1][1],
+            ""
+          );
+        } else {
+          topThreeMostVisitedUrls.push(invertedUrlsByCount[1][0], "", "");
+        }
+      }
+      break;
+  }
+
   return new Promise((resolve, reject) => {
-    if (result.length > 0) {
-      resolve(result);
+    if (topThreeMostVisitedUrls.length > 0) {
+      resolve(topThreeMostVisitedUrls);
     } else {
       reject(["Error getting most visited Ip addresses"]);
     }
@@ -49,24 +120,81 @@ const getThreeMostVisitedIpAddress = (
 const getThreeMostActiveIpAddresses = (
   fileData: formatLogFileModel[]
 ): Promise<string[]> => {
-  const result: string[] = [];
+  const topThreeActiveIpAddresses: string[] = [];
+
+  const sortedFileDataByTimeStamp = _.orderBy(
+    fileData,
+    ["dateTimeStamp"],
+    ["desc"]
+  );
+
+  console.log("sortedFileDataByTimeStamp", sortedFileDataByTimeStamp);
+  sortedFileDataByTimeStamp.slice(0, 3).forEach((fd) => {
+    topThreeActiveIpAddresses.push(fd.ip);
+  });
 
   return new Promise((resolve, reject) => {
-    if (result.length > 0) {
-      resolve(result);
+    if (topThreeActiveIpAddresses.length > 0) {
+      resolve(topThreeActiveIpAddresses);
     } else {
       reject(["Error getting most active Ip addresses"]);
     }
   });
 };
 
+const formatDateString = (date: string) => {
+  const splitDate = date.split(":");
+  const formattedDateSting = `${splitDate[0]} ${splitDate[1]}:${splitDate[2]}:${splitDate[3]}`;
+  // return formattedDateSting;
+  return moment(new Date(formattedDateSting)).utc().valueOf() ?? Date.now();
+};
+
 const formatLogFileRawData = (fileStringData: string): formatLogFileModel[] => {
-  return [];
+  const regExIpAddressMatcher: RegExp =
+    /(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3} -/gm;
+
+  const getURLRegEx: RegExp = /(GET|PUT|POST|DELETE) (.*) (HTTP\/1.1)/gm;
+
+  const getDateRegex: RegExp =
+    /\b\d{2}\/[a-zA-Z]{3}\/\d{4}:\d{2}:\d{2}:\d{2} \+\d{4}\b/gm;
+
+  const allIpAddressMatchesInLogFile: RegExpMatchArray | null =
+    fileStringData.match(regExIpAddressMatcher);
+
+  const allDateMatchesInLogFile: RegExpMatchArray | null =
+    fileStringData.match(getDateRegex);
+
+  const allURLMatchesInLogFile: RegExpMatchArray | null =
+    fileStringData.match(getURLRegEx);
+
+  const processedLogData: formatLogFileModel[] = [];
+
+  if (
+    allIpAddressMatchesInLogFile &&
+    allDateMatchesInLogFile &&
+    allURLMatchesInLogFile
+  ) {
+    for (let i = 0; i < allIpAddressMatchesInLogFile.length; i++) {
+      const formattedIpAddress = allIpAddressMatchesInLogFile[i].split(" ");
+      processedLogData.push({
+        ip: formattedIpAddress[0] ?? "",
+        dateTimeStamp: formatDateString(allDateMatchesInLogFile[i]),
+        url: allURLMatchesInLogFile[i] ?? "",
+      });
+    }
+    // console.log(
+    //   "allIpAddressMatchesInLogFile",
+    //   allIpAddressMatchesInLogFile.length
+    // );
+    // console.log("allDateMatchesInLogFile", allDateMatchesInLogFile.length);
+    // console.log("allURLMatchesInLogFile", allURLMatchesInLogFile.length);
+  }
+  return processedLogData;
 };
 
 const logFileUtils = {
-  getUniqueIpAddress,
-  getThreeMostVisitedIpAddress,
+  getNumberOfUniqueIpAddress,
+  getThreeMostVisitedUrls,
   getThreeMostActiveIpAddresses,
   getLogFilePath,
   formatLogFileRawData,

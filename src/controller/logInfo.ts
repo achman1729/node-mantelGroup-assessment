@@ -17,15 +17,15 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
       logFileUtils.formatLogFileRawData(fileStringData);
 
     const result: any = await Promise.all([
-      logFileUtils.getUniqueIpAddress(formattedLogFileData),
-      logFileUtils.getThreeMostVisitedIpAddress(formattedLogFileData),
+      logFileUtils.getNumberOfUniqueIpAddress(formattedLogFileData),
+      logFileUtils.getThreeMostVisitedUrls(formattedLogFileData),
       logFileUtils.getThreeMostActiveIpAddresses(formattedLogFileData),
     ])
-      .then(([threeMostVisited, threeMostActive, uniqueIps]) => {
+      .then(([uniqueIps, threeMostVisited, threeMostActive]) => {
         return {
-          uniqueIpAddresses: uniqueIps,
-          mostActiveIpAddresses: threeMostVisited,
-          mostVisitedIpAddresses: threeMostActive,
+          numberOfUniqueIpAddresses: uniqueIps,
+          threeMostVisitedUrls: threeMostVisited,
+          threeMostActiveIpAddresses: threeMostActive,
         };
       })
       .catch((errorMessage) => {
