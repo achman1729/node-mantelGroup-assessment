@@ -53,9 +53,14 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
       throw result.errorMessage;
     }
 
-    return res.status(200).send(result);
+    // console.log("res", res);
+    // console.log('res', res)
+    // console.log('res', res)
+
+    return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(404).send({ errorMessage: { Error: error } });
+    return res.status(404).json({ errorMessage: { Error: error } });
+    // return { errorMessage: { Error: error } };
   }
 };
 

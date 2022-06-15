@@ -45,11 +45,19 @@ const getThreeMostVisitedUrls = (
     allUrls.push(fd.url);
   });
 
+  // const a = [{a,b,c}: 1, {a}: 3, , ]
+
   const urlsByCount = _.countBy(allUrls);
+
+  console.log("urlsByCount", urlsByCount);
 
   const invertedUrlsByCount = _.invertBy(urlsByCount);
 
+  console.log("invertedUrlsByCount", invertedUrlsByCount);
+
   const keyArrayInDescendingOrder = _.reverse(Object.keys(invertedUrlsByCount));
+
+  console.log("keyArrayInDescendingOrder", keyArrayInDescendingOrder);
 
   switch (true) {
     case keyArrayInDescendingOrder.length >= 3:

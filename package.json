@@ -7,7 +7,7 @@
   "description": "A take home assessment for mantelgroup interview",
   "main": "index.js",
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "jest",
     "dev": "nodemon src/index.ts",
     "lint": "eslint src/js"
   },
@@ -23,6 +23,7 @@
     "moment": "^2.29.3",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.16",
+    "regenerator-runtime": "^0.13.9",
     "ts-node": "^10.8.1"
   },
   "devDependencies": {
