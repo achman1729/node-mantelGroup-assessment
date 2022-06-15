@@ -151,19 +151,19 @@ const formatLogFileRawData = (fileStringData: string): formatLogFileModel[] => {
   const regExIpAddressMatcher: RegExp =
     /(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3} -/gm;
 
-  const getURLRegEx: RegExp = /(GET|PUT|POST|DELETE) (.*) (HTTP\/1.1)/gm;
+  const regUrlMatcher: RegExp = /(GET|PUT|POST|DELETE) (.*) (HTTP\/1.1)/gm;
 
-  const getDateRegex: RegExp =
+  const regDateMatcher: RegExp =
     /\b\d{2}\/[a-zA-Z]{3}\/\d{4}:\d{2}:\d{2}:\d{2} \+\d{4}\b/gm;
 
   const allIpAddressMatchesInLogFile: RegExpMatchArray | null =
     fileStringData.match(regExIpAddressMatcher);
 
   const allDateMatchesInLogFile: RegExpMatchArray | null =
-    fileStringData.match(getDateRegex);
+    fileStringData.match(regDateMatcher);
 
   const allURLMatchesInLogFile: RegExpMatchArray | null =
-    fileStringData.match(getURLRegEx);
+    fileStringData.match(regUrlMatcher);
 
   const processedLogData: formatLogFileModel[] = [];
 
