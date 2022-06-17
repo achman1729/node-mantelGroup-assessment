@@ -1,2 +1,2 @@
-export * from "./fileReaderUtils";
-export * from "./logFileUtils";
+export * from "./fileReaderUtils/fileReaderUtils";
+export * from "./logFileUtils/logFileUtils";

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { fileReaderUtils, logFileUtils, formatLogFileModel } from "../utils";
+import { fileReaderUtils, logFileUtils, FormatLogFileModel } from "../utils";
 
 interface ResultData {
   numberOfUniqueIpAddresses: number;
@@ -28,7 +28,7 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
         throw errorMessage;
       });
 
-    const formattedLogFileData: formatLogFileModel[] =
+    const formattedLogFileData: FormatLogFileModel[] =
       logFileUtils.formatLogFileRawData(fileStringData);
 
     const result: Result = await Promise.all([
@@ -52,10 +52,6 @@ const getLogFileInfo = async (_req: Request, res: Response) => {
     if (result?.errorMessage) {
       throw result.errorMessage;
     }
-
-    // console.log("res", res);
-    // console.log('res', res)
-    // console.log('res', res)
 
     return res.status(200).json(result);
   } catch (error: any) {

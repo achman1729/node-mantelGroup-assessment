@@ -1,8 +1,8 @@
-import config from "../config";
+import config from "../../config";
 import _ from "lodash";
 import moment from "moment";
 
-export interface formatLogFileModel {
+export interface FormatLogFileModel {
   ip: string;
   dateTimeStamp: number;
   url: string;
@@ -14,7 +14,7 @@ const getLogFilePath = () => {
 };
 
 const getNumberOfUniqueIpAddress = (
-  fileData: formatLogFileModel[]
+  fileData: FormatLogFileModel[]
 ): Promise<number> => {
   const allIpAddresses: string[] = [];
 
@@ -36,7 +36,7 @@ const getNumberOfUniqueIpAddress = (
 };
 
 const getThreeMostVisitedUrls = (
-  fileData: formatLogFileModel[]
+  fileData: FormatLogFileModel[]
 ): Promise<string[]> => {
   const allUrls: string[] = [];
   const topThreeMostVisitedUrls: string[] = [];
@@ -47,21 +47,15 @@ const getThreeMostVisitedUrls = (
 
   const urlsByCount = _.countBy(allUrls);
 
-  console.log("urlsByCount", urlsByCount);
-
   const invertedUrlsByCount = _.invertBy(urlsByCount);
 
-  console.log("invertedUrlsByCount", invertedUrlsByCount);
-
   const keyArrayInDescendingOrder = _.reverse(Object.keys(invertedUrlsByCount));
-
-  console.log("keyArrayInDescendingOrder", keyArrayInDescendingOrder);
 
   switch (true) {
     case keyArrayInDescendingOrder.length > 3:
       {
-        keyArrayInDescendingOrder.forEach((key) => {
-          topThreeMostVisitedUrls.slice(0, 3).push(invertedUrlsByCount[key][0]);
+        keyArrayInDescendingOrder.slice(0, 3).forEach((key) => {
+          topThreeMostVisitedUrls.push(invertedUrlsByCount[key][0]);
         });
       }
       break;
@@ -69,7 +63,7 @@ const getThreeMostVisitedUrls = (
     case keyArrayInDescendingOrder.length === 3:
       {
         keyArrayInDescendingOrder.forEach((key) => {
-          topThreeMostVisitedUrls.slice(0, 3).push(invertedUrlsByCount[key][0]);
+          topThreeMostVisitedUrls.push(invertedUrlsByCount[key][0]);
         });
       }
       break;
@@ -132,7 +126,7 @@ const getThreeMostVisitedUrls = (
 };
 
 const getThreeMostActiveIpAddresses = (
-  fileData: formatLogFileModel[]
+  fileData: FormatLogFileModel[]
 ): Promise<string[]> => {
   const sortedFileDataByTimeStamp = _.orderBy(
     fileData,
@@ -161,7 +155,7 @@ const formatDateString = (date: string) => {
   return moment(new Date(formattedDateSting)).utc().valueOf() ?? Date.now();
 };
 
-const formatLogFileRawData = (fileStringData: string): formatLogFileModel[] => {
+const formatLogFileRawData = (fileStringData: string): FormatLogFileModel[] => {
   const regExIpAddressMatcher: RegExp =
     /(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3} -/gm;
 
@@ -179,7 +173,7 @@ const formatLogFileRawData = (fileStringData: string): formatLogFileModel[] => {
   const allURLMatchesInLogFile: RegExpMatchArray | null =
     fileStringData.match(regUrlMatcher);
 
-  const processedLogData: formatLogFileModel[] = [];
+  const processedLogData: FormatLogFileModel[] = [];
 
   if (
     allIpAddressMatchesInLogFile &&
