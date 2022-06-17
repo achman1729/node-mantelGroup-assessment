@@ -52,6 +52,7 @@ const getThreeMostVisitedUrls = (
   const keyArrayInDescendingOrder = _.reverse(Object.keys(invertedUrlsByCount));
 
   switch (true) {
+    // for logfile contain URLs that are called more than 3 times
     case keyArrayInDescendingOrder.length > 3:
       {
         keyArrayInDescendingOrder.slice(0, 3).forEach((key) => {
@@ -60,6 +61,7 @@ const getThreeMostVisitedUrls = (
       }
       break;
 
+    // for logfile contain URLs that are called 3 times
     case keyArrayInDescendingOrder.length === 3:
       {
         keyArrayInDescendingOrder.forEach((key) => {
@@ -68,6 +70,7 @@ const getThreeMostVisitedUrls = (
       }
       break;
 
+    // for logfile contain URLs that are called 2 times
     case keyArrayInDescendingOrder.length === 2:
       {
         if (invertedUrlsByCount[2].length >= 2) {
@@ -95,6 +98,7 @@ const getThreeMostVisitedUrls = (
       }
       break;
 
+    // for logfile contain URLs that are called only once
     case keyArrayInDescendingOrder.length === 1:
       {
         if (invertedUrlsByCount[1].length >= 3) {
