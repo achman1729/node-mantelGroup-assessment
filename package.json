@@ -8,8 +8,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon src/index.ts",
-    "lint": "eslint src/js"
+    "dev": "nodemon src/index.ts"
   },
   "author": "Achin",
   "license": "ISC",

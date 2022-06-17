@@ -1,8 +1,22 @@
 ### Instructions
 
+This is a backed application and has no UI. To run this app,
+
+- install postman or any other similar application
+
+- node version is: v16.13.2
+
+- npm version is: 8.1.2
+
+- install the dependencies by npm i or npm ci
+
+- to run the server on localhost: 3000 - npm run dev
+
+- to run jest tests: npm run test
+
 ### Assumptions
 
-- The log file is less than 10MB
+- The log file is small and reading doesn't cause big delays
 
 - The Log file can be empty
 
