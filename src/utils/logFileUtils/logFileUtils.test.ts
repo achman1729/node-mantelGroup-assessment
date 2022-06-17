@@ -49,7 +49,7 @@ describe("logFileUtils", () => {
       expect(uniqueIpAddresses).toBe(4);
     });
 
-    it("should return error ", async () => {
+    it("should return error on empty array", async () => {
       const uniqueIpAddresses = await logFileUtils
         .getNumberOfUniqueIpAddress([])
         .then((result) => {
